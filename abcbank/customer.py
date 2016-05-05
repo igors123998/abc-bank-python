@@ -2,6 +2,7 @@ from account import CHECKING, SAVINGS, MAXI_SAVINGS
 
 
 class Customer:
+
     def __init__(self, name):
         self.name = name
         self.accounts = []
@@ -21,11 +22,13 @@ class Customer:
         # JIRA-123 Change by Joe Bloggs 29/7/1988 start
         statement = None  # reset statement to null here
         # JIRA-123 Change by Joe Bloggs 29/7/1988 end
-        totalAcrossAllAccounts = sum([a.sumTransactions() for a in self.accounts])
+        totalAcrossAllAccounts = sum([a.sumTransactions()
+                                      for a in self.accounts])
         statement = "Statement for %s" % self.name
         for account in self.accounts:
             statement = statement + self.statementForAccount(account)
-        statement = statement + "\n\nTotal In All Accounts " + _toDollars(totalAcrossAllAccounts)
+        statement = statement + "\n\nTotal In All Accounts " +\
+            _toDollars(totalAcrossAllAccounts)
         return statement
 
     def statementForAccount(self, account):
@@ -36,10 +39,12 @@ class Customer:
             accountType = "\n\nSavings Account\n"
         if account.accountType == MAXI_SAVINGS:
             accountType = "\n\nMaxi Savings Account\n"
-        transactionSummary = [self.withdrawalOrDepositText(t) + " " + _toDollars(abs(t.amount))
+        transactionSummary = [self.withdrawalOrDepositText(t) + " " +
+                              _toDollars(abs(t.amount))
                               for t in account.transactions]
         transactionSummary = "  " + "\n  ".join(transactionSummary) + "\n"
-        totalSummary = "Total " + _toDollars(sum([t.amount for t in account.transactions]))
+        totalSummary = "Total " + _toDollars(sum([t.amount for t in
+                                                  account.transactions]))
         return accountType + transactionSummary + totalSummary
 
     def withdrawalOrDepositText(self, transaction):
@@ -49,6 +54,20 @@ class Customer:
             return "deposit"
         else:
             return "N/A"
+
+    def transfer(self, from_account, to_account, amount):
+        if amount <= 0:
+            raise ValueError('Incorrect amount, should be more than 0')
+        if from_account.amount < amount:
+            raise ValueError('Incorrect amount, should be more than '
+                             'source account amount')
+        from_account.withdraw(amount)
+        try:
+            to_account.deposit(amount)
+        except:
+            from_account.deposit(amount)
+            raise
+        return True
 
 
 def _toDollars(number):

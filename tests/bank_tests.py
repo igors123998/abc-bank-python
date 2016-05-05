@@ -1,8 +1,8 @@
 from nose.tools import assert_equals
 
-from account import Account, CHECKING, MAXI_SAVINGS, SAVINGS
-from bank import Bank
-from customer import Customer
+from abcbank.account import Account, CHECKING, MAXI_SAVINGS, SAVINGS
+from abcbank.bank import Bank
+from abcbank.customer import Customer
 
 
 def test_customer_summary():
@@ -35,4 +35,13 @@ def test_maxi_savings_account():
     checkingAccount = Account(MAXI_SAVINGS)
     bank.addCustomer(Customer("Bill").openAccount(checkingAccount))
     checkingAccount.deposit(3000.0)
-    assert_equals(bank.totalInterestPaid(), 170.0)
+    assert_equals(bank.totalInterestPaid(), 150.0)
+
+
+def test_maxi_savings_account_with_withdrawals():
+    bank = Bank()
+    checkingAccount = Account(MAXI_SAVINGS)
+    bank.addCustomer(Customer("Bill").openAccount(checkingAccount))
+    checkingAccount.deposit(3000.0)
+    checkingAccount.withdraw(1000.0)
+    assert_equals(bank.totalInterestPaid(), 2.0)
