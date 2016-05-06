@@ -1,4 +1,5 @@
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_almost_equals
+from datetime import datetime
 
 from abcbank.account import Account, CHECKING, SAVINGS, MAXI_SAVINGS
 from abcbank.customer import Customer
@@ -36,6 +37,17 @@ def test_threeAccounts():
     oscar.openAccount(Account(CHECKING))
     oscar.openAccount(Account(MAXI_SAVINGS))
     assert_equals(oscar.numAccs(), 3)
+
+
+def test_withdrawals():
+    checkingAccount = Account(CHECKING)
+    oscar = Customer("Oscar").openAccount(checkingAccount)
+    checkingAccount.deposit(1000.0, datetime(2016, 4, 12))
+    checkingAccount.deposit(1000.0, datetime(2016, 4, 15))
+    checkingAccount.deposit(1000.0, datetime(2016, 4, 17))
+    assert_almost_equals(oscar.totalInterestEarned(), 0.17, places=2)
+    checkingAccount.withdraw(1000.0, datetime(2016, 4, 19))
+    assert_almost_equals(oscar.totalInterestEarned(), 0.12, places=2)
 
 
 def test_transferAmountBelowZero():

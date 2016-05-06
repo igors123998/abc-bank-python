@@ -3,22 +3,20 @@ from tests import bank_tests, customer_tests, transaction_tests
 
 def run():
     print 'Running bank tests...'
-    bank_tests.test_customer_summary()
-    bank_tests.test_checking_account()
-    bank_tests.test_savings_account()
-    bank_tests.test_maxi_savings_account()
-    bank_tests.test_maxi_savings_account_with_withdrawals()
+    b_tests = [getattr(bank_tests, obj) for obj in dir(bank_tests)
+               if 'test_' in obj]
+    for func in b_tests:
+        func()
     print 'Running customer tests...'
-    customer_tests.test_statement()
-    customer_tests.test_oneAccount()
-    customer_tests.test_twoAccounts()
-    customer_tests.test_threeAccounts()
-    customer_tests.test_transferAmountBelowZero()
-    customer_tests.test_transferNotEnoughFunds()
-    customer_tests.test_transferAmount()
+    c_tests = [getattr(customer_tests, obj) for obj in dir(customer_tests)
+               if 'test_' in obj]
+    for func in c_tests:
+        func()
     print 'Running transactions tests...'
-    transaction_tests.test_type()
-    transaction_tests.test_withdraw()
+    t_tests = [getattr(transaction_tests, obj)
+               for obj in dir(transaction_tests) if 'test_' in obj]
+    for func in t_tests:
+        func()
     print 'Done'
 
 if __name__ == '__main__':
